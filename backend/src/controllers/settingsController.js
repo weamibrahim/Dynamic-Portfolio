@@ -1,5 +1,16 @@
 const Settings = require('../models/Settings');
 const cloudinary = require('../config/cloudinary');
+const nodemailer = require('nodemailer');
+
+function createTransporter() {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+}
 
 function getPublicId(url) {
   if (!url || !url.includes('cloudinary.com')) return null;
@@ -90,9 +101,60 @@ exports.publishPortfolio = async (req, res) => {
 exports.handleContact = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
-    // TODO: wire up Nodemailer or SendGrid for production
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    // Get the portfolio owner's contact email from settings
+    const settings = await Settings.findOne().sort({ createdAt: 1 });
+    const toEmail = settings?.contactEmail || process.env.EMAIL_USER;
+
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('Email env vars not set — skipping email send.');
+      return res.json({ message: 'Your message has been received!' });
+    }
+
+    const transporter = createTransporter();
+
+    // Notify the portfolio owner
+    await transporter.sendMail({
+      from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      replyTo: email,
+      subject: `[Portfolio] ${subject}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto">
+          <h2 style="color:#6366f1">New Contact Message</h2>
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td style="padding:8px;font-weight:bold;color:#555">Name</td><td style="padding:8px">${name}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;color:#555">Email</td><td style="padding:8px"><a href="mailto:${email}">${email}</a></td></tr>
+            <tr><td style="padding:8px;font-weight:bold;color:#555">Subject</td><td style="padding:8px">${subject}</td></tr>
+          </table>
+          <div style="margin-top:16px;padding:16px;background:#f9fafb;border-radius:8px;white-space:pre-wrap">${message}</div>
+        </div>
+      `,
+    });
+
+    // Auto-reply to the sender
+    await transporter.sendMail({
+      from: `"${settings?.name || 'Portfolio'}" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `Re: ${subject}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto">
+          <h2 style="color:#6366f1">Thanks for reaching out, ${name}!</h2>
+          <p>I've received your message and will get back to you within 24 hours.</p>
+          <blockquote style="border-left:3px solid #6366f1;padding-left:16px;color:#666;margin:16px 0">
+            ${message}
+          </blockquote>
+          <p style="color:#888;font-size:13px">— ${settings?.name || 'The Portfolio Team'}</p>
+        </div>
+      `,
+    });
+
     res.json({ message: 'Your message has been sent successfully!' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Contact email error:', err);
+    res.status(500).json({ message: 'Failed to send message. Please try again.' });
   }
 };
