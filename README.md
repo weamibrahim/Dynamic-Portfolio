@@ -1,107 +1,62 @@
-# Digital Curator — Full Stack Portfolio
+# Dynamic Portfolio — Digital Curator 🎨
 
-## Tech Stack
-**Frontend:** React + Vite + Tailwind CSS v4 + shadcn-style components + React Hook Form + Zod + TanStack Query + Zustand  
-**Backend:** Node.js + Express + Mongoose (MongoDB)
+A premium, full-stack portfolio management system designed for UI/UX designers and creative professionals. Built with a focus on aesthetics, interactivity, and brand identity.
 
----
+![Digital Curator Preview](https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=1200&q=80)
 
-## Quick Start
+## ✨ Features
 
-### 1. Backend
-```bash
-cd backend
-cp .env.example .env        # edit MONGODB_URI and JWT_SECRET
-npm install
-npm start                   # runs on http://localhost:5000
-```
+- **Dynamic Tech Marquee**: Interactive skill showcase with vibrant brand icons powered by Iconify.
+- **Real-time Theme Engine**: Switch between Light and Dark modes with instant persistence and zero-flash loading.
+- **Brand Accents**: Fully customizable accent colors (Indigo, Rose, Emerald, Amber) that ripple across the entire UI.
+- **Project Management**: Dedicated dashboard to manage, feature, and showcase your best work.
+- **UI/UX Optimized**: Designed with a "Creative Director" aesthetic — clean typography, glassmorphism, and smooth animations.
+- **Instant Data Seeding**: Pre-loaded with professional UI/UX designer demo data to get started in seconds.
 
-### 2. Frontend
-```bash
-cd frontend
-npm install
-npm run dev                 # runs on http://localhost:5173
-```
+## 🚀 Tech Stack
 
----
+- **Frontend**: React 18, Vite, Tailwind CSS v4, Framer Motion, Zustand, React Query.
+- **Backend**: Node.js, Express, MongoDB, JWT Authentication (HttpOnly Cookies).
+- **Icons**: Dynamic Iconify API (Logos & Simple Icons).
 
-## Environment Variables
+## 🛠️ Getting Started
 
-### backend/.env
-```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/digital-curator
-JWT_SECRET=change_this_to_a_long_random_string
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-```
+### Prerequisites
+- Node.js (v18+)
+- MongoDB (Local or Atlas)
 
-### frontend/.env
-```
-VITE_API_URL=http://localhost:5000/api
-```
+### Installation
 
----
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/weamibrahim/Dynamic-Portfolio.git
+   cd Dynamic-Portfolio
+   ```
 
-## Pages & Routes
+2. **Setup Backend**
+   ```bash
+   cd backend
+   npm install
+   # Create a .env file with MONGODB_URI and JWT_SECRET
+   npm run dev
+   ```
 
-| Route | Page | Auth |
-|-------|------|------|
-| `/login` | Login / Register | Public |
-| `/portfolio` | Public portfolio site | Public |
-| `/overview` | Dashboard overview | Protected |
-| `/projects` | Project list + management | Protected |
-| `/projects/new` | Add new project | Protected |
-| `/projects/:id/edit` | Edit project | Protected |
-| `/analytics` | Analytics overview | Protected |
-| `/settings` | Appearance & theme | Protected |
+3. **Setup Frontend**
+   ```bash
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
 
----
+4. **Seed Demo Data (Optional)**
+   ```bash
+   cd ../backend
+   node seed_uiux.js
+   ```
 
-## API Endpoints
+## 🔐 Credentials (Demo)
+- **Email**: `designer@digitalcurator.dev`
+- **Password**: `Designer1234!`
 
-### Auth
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET  /api/auth/me`
-- `PUT  /api/auth/profile`
-
-### Projects
-- `GET    /api/projects?page=1&limit=8&status=&search=&category=`
-- `GET    /api/projects/stats`
-- `GET    /api/projects/:id`
-- `POST   /api/projects` (multipart/form-data)
-- `PUT    /api/projects/:id` (multipart/form-data)
-- `DELETE /api/projects/:id`
-
-### Analytics
-- `GET /api/analytics/overview`
-
-### Settings
-- `GET  /api/settings`
-- `PUT  /api/settings`
-- `POST /api/settings/publish`
-
----
-
-## Project Structure
-```
-digital-curator/
-├── backend/
-│   ├── server.js
-│   ├── src/
-│   │   ├── models/         User, Project, Settings
-│   │   ├── routes/         auth, projects, analytics, settings
-│   │   └── middleware/     auth (JWT)
-│   └── .env.example
-└── frontend/
-    ├── src/
-    │   ├── store/          authStore (Zustand), uiStore (Zustand)
-    │   ├── hooks/          useProjects, useApi (TanStack Query)
-    │   ├── context/        AuthContext
-    │   ├── components/ui/  Button, Card, Input, Toast, ConfirmDialog
-    │   ├── pages/          Login, Overview, Projects, AddProject,
-    │   │                   Analytics, Settings, Portfolio
-    │   └── App.jsx         Providers + Router
-    └── .env
-```
+## 📄 License
+MIT License. Created with ❤️ for the design community.
