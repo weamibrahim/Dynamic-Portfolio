@@ -26,7 +26,6 @@ const corsOptions = {
   credentials: true,
 };
 
-app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
@@ -51,7 +50,12 @@ const connectDB = async () => {
 };
 
 // Serverless handler
+const HEALTH_PATHS = new Set(['/', '/api/health']);
+
 const handler = async (req, res) => {
+  if (HEALTH_PATHS.has(req.url?.split('?')[0])) {
+    return app(req, res);
+  }
   try {
     await connectDB();
   } catch (err) {
