@@ -38,22 +38,27 @@ app.use('/api/settings', settingsRoutes);
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.get('/', (req, res) => res.json({ status: 'ok', message: 'API is running' }));
 
-// Lazy MongoDB connection for serverless environments
-let isConnected = false;
+// MongoDB connection — reuses existing connection across warm serverless instances
 const connectDB = async () => {
-  if (isConnected) return;
-  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/digital-curator');
-  isConnected = true;
+  if (mongoose.connection.readyState >= 1) return;
+  const uri = process.env.MONGODB_URI;
+  if (!uri) throw new Error('MONGODB_URI environment variable is not set');
+  await mongoose.connect(uri);
   console.log('✅ Connected to MongoDB');
 };
 
-// Serverless handler wraps the express app with a DB connection
+// Serverless handler
 const handler = async (req, res) => {
-  await connectDB();
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error('DB connection failed:', err.message);
+    return res.status(500).json({ message: 'Database connection failed' });
+  }
   return app(req, res);
 };
 
-// Local development: start the HTTP server directly
+// Local development
 if (process.env.NODE_ENV !== 'production') {
   connectDB()
     .then(() => {
