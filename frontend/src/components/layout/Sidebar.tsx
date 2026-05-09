@@ -21,10 +21,10 @@ export default function Sidebar({ onNewProject, onClose, portfolioTitle }: Sideb
   const navigate = useNavigate()
   
   
-  const handleLogout = async () => { 
-    await logoutMutation.mutateAsync;
-     navigate('/login')
-     }
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync()
+    navigate('/login')
+  }
   const handleNew = () => { if (onClose) onClose(); onNewProject?.(); navigate('/projects/new') }
 
   return (
